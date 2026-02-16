@@ -1,0 +1,8 @@
+FROM docker.io/ubuntu:24.04
+WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    apt-get clean
+COPY grid.c .
+RUN gcc -Wall -O2 grid.c -o grid
+CMD ["/app/grid"]

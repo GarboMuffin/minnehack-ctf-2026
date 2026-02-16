@@ -1,0 +1,8 @@
+FROM docker.io/ubuntu:24.04
+WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    apt-get clean
+COPY gets.c .
+RUN gcc -Wall -ansi -O0 gets.c -o gets
+CMD ["/app/gets"]
