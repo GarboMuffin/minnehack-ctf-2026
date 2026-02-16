@@ -1,0 +1,22 @@
+name: Label pull requests
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  label-pull-request:
+    runs-on: ubuntu-slim
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Assign labels
+        run: ./scripts/label-pull-request.sh
+        env:
+          PR_NUMBER: "${{ github.event.number }}"
+          GH_TOKEN: "${{ github.token }}"
+          GH_REPO: "${{ github.repository }}"

@@ -1,0 +1,21 @@
+name: Reply to new issues
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  reply-to-new-issues:
+    runs-on: ubuntu-slim
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Reply to new issues
+        run: |
+          export GH_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          export FLAG="${{ secrets.FLAG_1 }}"
+          ./scripts/reply-to-new-issues.sh "${{ github.repository }}" "${{ github.event.issue.number }}" "${{ github.event.issue.title }}"

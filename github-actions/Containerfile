@@ -1,0 +1,5 @@
+FROM docker.io/alpine:3.23
+WORKDIR /app
+RUN apk add --no-cache git openssh
+COPY pushbot.sh .
+CMD ["/app/pushbot.sh"]
