@@ -1,0 +1,5 @@
+FROM docker.io/debian:11
+
+RUN apt-get update && \
+    apt-get -y install build-essential xxd && \
+    apt-get clean

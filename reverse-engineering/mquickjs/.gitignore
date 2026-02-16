@@ -1,0 +1,10 @@
+*.o
+*.d
+example
+example_stdlib
+libm
+mqjs
+mqjs_stdlib
+mqjs_stdlib.h
+example_stdlib.h
+mquickjs_atom.h
