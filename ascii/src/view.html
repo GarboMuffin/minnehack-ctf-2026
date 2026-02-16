@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf8">
+    <meta name="robots" content="noindex">
+    <meta name="color-scheme" content="dark light">
+    <title>ASCII Share</title>
+    <style>
+    </style>
+</head>
+
+<body>
+<pre>
+  /$$$$$$   /$$$$$$   /$$$$$$  /$$$$$$ /$$$$$$        /$$$$$$  /$$                                    
+ /$$__  $$ /$$__  $$ /$$__  $$|_  $$_/|_  $$_/       /$$__  $$| $$                                    
+| $$  \ $$| $$  \__/| $$  \__/  | $$    | $$        | $$  \__/| $$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$ 
+| $$$$$$$$|  $$$$$$ | $$        | $$    | $$        |  $$$$$$ | $$__  $$ |____  $$ /$$__  $$ /$$__  $$
+| $$__  $$ \____  $$| $$        | $$    | $$         \____  $$| $$  \ $$  /$$$$$$$| $$  \__/| $$$$$$$$
+| $$  | $$ /$$  \ $$| $$    $$  | $$    | $$         /$$  \ $$| $$  | $$ /$$__  $$| $$      | $$_____/
+| $$  | $$|  $$$$$$/|  $$$$$$/ /$$$$$$ /$$$$$$      |  $$$$$$/| $$  | $$|  $$$$$$$| $$      |  $$$$$$$
+|__/  |__/ \______/  \______/ |______/|______/       \______/ |__/  |__/ \_______/|__/       \_______/
+                                                                                                      
+</pre>
+
+<pre>------------------------------------------------------------------------------------------------------</pre>
+<pre id="loading">Loading art...</pre>
+<pre id="art"></pre>
+
+<script>
+    var loading = document.getElementById('loading');
+    var art = document.getElementById('art');
+
+    var id = new URLSearchParams(location.search).get('id');
+
+    async function load() {
+        var response = await fetch('/api/get?id=' + id);
+        if (!response.ok) {
+            alert('Error loading art');
+            return;
+        }
+        var content = await response.text();
+        loading.hidden = true;
+        art.innerHTML = content;
+    }
+
+    load();
+</script>
+</body>
+
+</html>

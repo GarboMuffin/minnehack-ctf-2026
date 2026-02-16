@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SVG Share</title>
+    <style>
+        :root {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>SVG Share</h1>
+
+    <h2>Upload a new image</h2>
+    <p>
+        <input type="file" accept=".svg" id="file-input">
+    </p>
+    <p>
+        <button onclick="upload()">Upload</button>
+    </p>
+
+    <script>
+        var fileInput = document.getElementById('file-input');
+
+        async function upload() {
+            if (fileInput.files.length === 0) {
+                alert('No image selected!');
+                return;
+            }
+
+            var content = await fileInput.files[0].text();
+
+            var request = await fetch('/api/upload', {
+                method: 'POST',
+                body: JSON.stringify({
+                    content: content
+                })
+            });
+
+            if (request.ok) {
+                var response = await request.json();
+                location.href = 'view?id=' + response.id;
+            } else {
+                alert('Could not upload image!');
+            }
+        }
+    </script>
+</body>
+
+</html>

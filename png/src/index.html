@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf8">
+    <meta name="robots" content="noindex">
+    <meta name="color-scheme" content="dark light">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PNG Share</title>
+    <style>
+        :root {
+            font-family: sans-serif;;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>PNG Share</h1>
+
+    <p>Upload a fancy PNG!</p>
+    <p><label>Title: <input type="text" id="title-input" placeholder="Image name" maxlength="200"></label></p>
+    <p><input type="file" accept=".png" id="file-input"></p>
+    <p>
+        <button onclick="upload()">Upload</button>
+    </p>
+
+    <script>
+        var fileInput = document.getElementById('file-input');
+        var titleInput = document.getElementById('title-input');
+
+        function sanitize(text) {
+            return text
+                .replace(/&/g, '&amp;').
+                replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').
+                replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        async function upload() {
+            if (!titleInput.value.trim()) {
+                alert('Please enter a title!');
+                return;
+            }
+
+            if (fileInput.files.length === 0) {
+                alert('No image selected!');
+                return;
+            }
+
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.onload = async function () {
+                var request = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: sanitize(titleInput.value),
+                        content: reader.result
+                    })
+                });
+
+                if (request.ok) {
+                    var response = await request.json();
+                    location.href = 'view?id=' + response.id;
+                } else {
+                    alert('Could not upload image!');
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+
+</html>

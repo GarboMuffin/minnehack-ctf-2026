@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf8">
+    <meta name="robots" content="noindex">
+    <title>SVG Share</title>
+</head>
+
+<body>
+    <p id="title"></p>
+    <p id="loading">Loading image...</p>
+    <canvas id="canvas" width="0" height="0"></canvas>
+
+    <script>
+        var loading = document.getElementById('loading');
+        var title = document.getElementById('title');
+        var canvas = document.getElementById('canvas');
+
+        var id = new URLSearchParams(location.search).get('id');
+        title.innerHTML = `Image ID: ${id}`;
+
+        async function load() {
+            var response = await fetch('/api/get?id=' + id);
+
+            if (!response.ok) {
+                alert('Error loading SVG');
+                return;
+            }
+
+            var content = await response.text();
+            loading.hidden = true;
+
+            var project = new paper.Project(canvas);
+            project.importSVG(content);
+
+            var bounds = project.activeLayer.bounds;
+            canvas.width = bounds.width;
+            canvas.height = bounds.height;
+        }
+    </script>
+
+    <script src="paper-core.js"></script>
+    <script>
+        load();
+    </script>
+</body>
+
+</html>

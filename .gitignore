@@ -1,0 +1,8 @@
+# nodejs
+node_modules
+
+# SQLite databases
+*.db
+
+# macOS
+.DS_Store

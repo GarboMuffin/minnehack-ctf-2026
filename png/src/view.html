@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf8">
+    <meta name="robots" content="noindex">
+    <meta name="color-scheme" content="dark light">
+    <title>PNG Share</title>
+    <style>
+        :root {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>PNG Share</h1>
+    <h2 id="title"></h2>
+    <p id="loading">Loading image...</p>
+    <div id="image-container"></div>
+
+    <script>
+        var loading = document.getElementById('loading');
+        var title = document.getElementById('title');
+        var container = document.getElementById('image-container');
+
+        var id = new URLSearchParams(location.search).get('id');
+
+        async function load() {
+            var response = await fetch('/api/get?id=' + id);
+
+            if (!response.ok) {
+                alert('Error loading image');
+                return;
+            }
+
+            var data = await response.json();
+            loading.hidden = true;
+
+            var img = document.createElement('img');
+            img.src = data.content;
+            container.appendChild(img);
+            title.innerHTML = data.title;
+        }
+
+        load();
+    </script>
+</body>
+
+</html>

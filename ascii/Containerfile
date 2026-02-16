@@ -1,0 +1,12 @@
+FROM docker.io/alpine:3.21
+WORKDIR /app
+RUN apk add --no-cache nodejs npm
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY src/ src/
+
+EXPOSE 80
+
+CMD ["node", "src/index.js"]

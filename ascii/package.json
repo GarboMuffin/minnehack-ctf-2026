@@ -1,0 +1,11 @@
+{
+  "name": "@muffins/mh-ctf-2026-ascii",
+  "version": "1.0.0",
+  "license": "ISC",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^2.2.1",
+    "express": "^5.2.1"
+  }
+}

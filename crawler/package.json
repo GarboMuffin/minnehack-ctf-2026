@@ -1,0 +1,10 @@
+{
+  "name": "@muffins/mh-ctf-2026-crawler",
+  "version": "1.0.0",
+  "license": "ISC",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "puppeteer": "^24.34.0"
+  }
+}
