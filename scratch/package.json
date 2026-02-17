@@ -1,0 +1,10 @@
+{
+  "name": "@muffins/mh-ctf-2026-scratch",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "all.js",
+  "dependencies": {
+    "@turbowarp/jszip": "^3.12.0"
+  },
+  "private": true
+}
