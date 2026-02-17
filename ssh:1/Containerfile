@@ -1,0 +1,10 @@
+FROM docker.io/debian:12
+WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y openssh-server podman && \
+    ssh-keygen -A && \
+    adduser ctf && \
+    passwd -d ctf && \
+    apt-get clean
+COPY start_sshd.sh entrypoint.sh sshd_config .
+CMD ["/app/start_sshd.sh"]

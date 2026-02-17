@@ -1,0 +1,21 @@
+# allow logging in to only the ctf user
+PermitRootLogin no
+PubkeyAuthentication no
+PermitEmptyPasswords yes
+PasswordAuthentication yes
+AllowUsers ctf
+
+# disable dangerous things
+AllowTcpForwarding no
+AllowAgentForwarding no
+X11Forwarding no
+
+# kill inactive connections more quickly
+ClientAliveInterval 3
+ClientAliveCountMax 2
+
+# debugging
+LogLevel VERBOSE
+
+# start hardcoded program
+ForceCommand /app/entrypoint.sh
