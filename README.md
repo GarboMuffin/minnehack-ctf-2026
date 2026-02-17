@@ -1,10 +1,20 @@
+# MinneHack CTF 2026
+
+This is the code for the CTF event at [MinneHack 2026](https://minnehack.com/) including our custom website, goofy infrastructure, and almost all of the challenges.
+
+Commit history, unfinished challenges, and a couple other things are not included here for various reasons. For exmaple, it turns out we accidentally committed our HTTPS certificates into the repository at one point. Whoops.
+
+## Puzzles and solutions
+
+We're working on a writeup for everything. It takes time. It'll be published on https://muffin.ink/ when it's ready.
+
 ## How we ran the CTF in production
 
-Our set up is in podman-compose.yml. Some other details about how we did it:
+This repo and especially podman-compose.yml is basically what we ran in production. Some other details about how we did it:
 
  * Our domain was ctf.minnehack.com and *.ctf.minnehack.com
- * Debian 13 host
- * We used two different IPs. One IP was for regular HTTP/HTTPS. The other IP's ports 80 and 443 were used for SSH and Minecraft respectively to work around fireall problems with the guest wifi.
+ * Server host ran Debian 13
+ * We used two different IPs. On one IP we used ports 80/443 for regular HTTP/HTTPS. On the other IP we used ports 80/443 for CTF SSH and Minecraft respectively. This is to work around the guest wifi firewall being very restrictive about internal traffic.
  * We ran two instances of the portal. One "competitive" instance without teams and another "non-competitive" instance that allowed people to make teams.
 
 Here's how we set up our production environment.
