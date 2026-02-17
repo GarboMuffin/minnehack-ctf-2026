@@ -27,6 +27,7 @@ run_container() {
         --cpus=1 \
         --network=none \
         --pids-limit=10 \
+        --timeout=3600 \
         $@
     trap - EXIT
 }
