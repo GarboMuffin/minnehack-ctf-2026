@@ -1,0 +1,15 @@
+FROM docker.io/fedora:43
+WORKDIR /app
+RUN dnf -y update && \
+    dnf -y install java-21-openjdk-headless gcc util-linux && \
+    dnf -y clean all  
+
+# https://www.minecraft.net/en-us/download/server
+RUN curl https://piston-data.mojang.com/v1/objects/64bb6d763bed0a9f1d632ec347938594144943ed/server.jar -o server.jar
+
+COPY server-icon.png start.sh command.sh mcrcon.c .
+RUN gcc mcrcon.c -o mcrcon.out
+
+EXPOSE 25565
+
+CMD ["/app/start.sh"]

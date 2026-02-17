@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "It's just a resource pack",
+    "min_format": [75],
+    "max_format": [75]
+  }
+}
