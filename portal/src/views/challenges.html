@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Challenges - <%= it.EVENT_NAME %></title>
+    <%~ include('./head-common.html') %>
+    <style>
+        .challenge-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));;
+            gap: 16px;
+        }
+        .challenge {
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            background-color: #111;
+            color: #eee;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+            gap: 4px;
+            border-radius: 4px;
+        }
+        @media (prefers-color-scheme: dark) {
+            .challenge {
+                background-color: #eee;
+                color: #111;
+            }
+        }
+        .challenge:active[href]:not(.locked) {
+            opacity: 0.9;
+        }
+        .challenge > * {
+            margin: 0;
+        }
+        .challenge-name {
+            font-weight: bold;
+        }
+        .challenge-points {
+            font-size: 0.85em;
+        }
+        .completed {
+            color: #eee;
+            background-color: green;
+        }
+        .locked {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .error-alert {
+            display: block;
+            color: inherit;
+            text-decoration: inherit;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid red;
+            background-color: rgba(255, 0, 0, 0.371);
+        }
+        .error-alert > * {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <%~ include('./header-common.html') %>
+
+    <main class="main">
+        <h1>Challenges</h1>
+
+        <% if (!it.userId) { %>
+            <a class="error-alert" href="/">
+                <h2>You must sign in to view challenges.</h2>
+            </a>
+        <% } else if (!it.teamId) { %>
+            <% if (it.MAX_TEAM_MEMBERS > 1) { %>
+                <a class="error-alert" href="/team">
+                    <h2>You must create or join a team to view challenges.</h2>
+                </a>
+            <% } else { %>
+                <a class="error-alert" href="/account">
+                    <h2>You must finish setting up your account to view challenges.</h2>
+                </a>
+            <% } %>
+        <% } %>
+
+        <%~ include('rules-common.html') %>
+
+        <% for (const category of it.categories) { %>
+            <div class="category">
+                <h2><%= category.name %></h2>
+                <div>
+                    <%~ category.description %>
+                </div>
+
+                <div class="challenge-list">
+                    <% for (const challenge of category.challenges) { %>
+                        <%
+                            let attribs = '';
+                            let cls = 'challenge';
+                            const locked = !it.hasUnlockedChallenge(challenge.id);
+                            if (locked) cls += ' locked';
+                            if (it.hasCompletedChallenge(challenge.id)) cls += ' completed';
+                            const href = it.teamId && !locked ? '/challenges/' + challenge.id : null;
+                            attribs += ' class="' + cls + '"';
+                            if (href) attribs += ' href="' + href + '"';
+                            if (locked) attribs += ' title="You haven\'t unlocked this challenge yet"';
+                        %>
+                        <a <%~ attribs %>>
+                            <h3 class="challenge-name"><%= challenge.name %></h3>
+                            <% if (challenge.value === 1) { %>
+                                <p class="challenge-points">1 point</p>
+                            <% } else { %>
+                                <p class="challenge-points"><%= challenge.value %> points</p>
+                            <% } %>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+    </main>
+
+    <%~ include('footer-common.html') %>
+</body>
+
+</html>

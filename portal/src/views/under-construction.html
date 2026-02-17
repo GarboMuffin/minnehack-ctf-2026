@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Coming Soon - <%= it.EVENT_NAME %></title>
+    <%~ include('./head-common.html') %>
+</head>
+
+<body>
+    <%~ include('./header-common.html') %>
+
+    <main class="main">
+        <h1><%= it.EVENT_NAME %> 2026 is coming soon</h1>
+        <p><b>When:</b> 5:00 PM Saturday February 14 - Noon February 15</p>
+        <p><b>Prize:</b> There will be a prize :)</p>
+        <p><b>Teams:</b> <i>For just the CTF specifically, prize will only be available to people competing individually</i>. If you're just showing up to have fun and don't want the prize we can't stop you from getting together and having a good time, but none of you can get the prize. The rest of MinneHack is still up to 4 people per team.</p>
+        <p><b>Difficulty:</b> We're trying to support a variety of skill levels. If you're a beginner, we can help you learn. If you're an experienced CTF player you'll find the event to be on the easier end, but think we have a few interesting or at least unique challenges in here.</p>
+        <p><b>Categories:</b></p>
+        <ul>
+            <li>The classics: Reverse engineering, binary exploitation, web security, a tiny bit of cryptography</li>
+            <li>Some unusual ones: Minecraft, Scratch, hijacking npm packages</li>
+            <li>A zero-day in a large open source project (we told them about it two years ago so it's not actually a zero day, but it's just still not fixed)</li>
+            <li>Maybe more surpises. We're still writing stuff.</li>
+        </ul>
+        <p><b>Writeups:</b> Planning to publish things in March so you can learn about what you missed. We're not writing these ahead of time so it'll take a while :(</p>
+    </main>
+
+    <%~ include('footer-common.html') %>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "@muffins/mh-ctf-2026-portal",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "better-sqlite3": "^12.6.0",
+    "body-parser": "^2.2.2",
+    "cookie-parser": "^1.4.7",
+    "eta": "^4.5.0",
+    "express": "^5.2.1",
+    "highlight.js": "^11.11.1"
+  },
+  "private": true
+}

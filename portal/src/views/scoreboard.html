@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Scoreboard - <%= it.EVENT_NAME %></title>
+    <%~ include('./head-common.html') %>
+    <style>
+        #table {
+            width: 100%;
+        }
+        .you {
+            font-weight: bold;
+        }
+        .place, .score, .date {
+            white-space: nowrap;
+            text-align: center;
+        }
+        .name {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <%~ include('./header-common.html') %>
+
+    <main class="main">
+        <h1>Scoreboard</h1>
+
+        <% if (it.MAX_TEAM_MEMBERS > 1) { %>
+            <p>If multiple teams have the same score, the tie is broken in favor of the team that got to that score earliest.</p>
+        <% } else { %>
+            <p>If multiple people have the same score, the tie is broken in favor of the person that got to that score earliest.</p>
+        <% } %>
+
+        <% if (it.scoreboard.length) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="place">Rank</th>
+                        <th class="score">Score</th>
+                        <th class="name">Name</th>
+                        <th class="date">Last Solve</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i = 0; i < it.scoreboard.length; i++) { %>
+                        <% const t = it.scoreboard[i]; %>
+                        <tr class="<%= t.team_id === it.teamId ? 'you' : '' %>">
+                            <td class="place">
+                                <%= i + 1 %>
+                            </td>
+                            <td class="score">
+                                <%= t.sum %>
+                            </td>
+                            <td class="name">
+                                <% if (t.team_id === it.teamId) { %>
+                                    (You)
+                                <% } %>
+                                <%= t.team_name %>
+                            </td>
+                            <td class="date" title="<%= new Date(t.at).toLocaleString() %>">
+                                <%= t.at ? new Date(t.at).toLocaleTimeString() : "N/A" %>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p>No teams yet.</p>
+        <% } %>
+
+    </main>
+
+    <%~ include('footer-common.html') %>
+</body>
+
+</html>

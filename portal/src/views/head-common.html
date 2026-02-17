@@ -1,0 +1,183 @@
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="/favicon.png">
+
+<!--
+
+    You won't find any flags in here. They're all validated on the server and are behind strict rate limits.
+
+-->
+<script>
+    console.log('You won\'t find any flags in here. They\'re all validated on the server and are behind strict rate limits.');
+</script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    font-family: sans-serif;
+    line-height: 1.2;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        color: #eee;
+        background-color: #111;
+        color-scheme: dark;
+    }
+}
+
+:root, html, body {
+    margin: 0;
+    padding: 0;
+}
+
+summary, p, h1, h2, h3, ul, pre {
+    margin: 16px 0;
+}
+
+.header {
+    background-color: black;
+    color: <%= it.VARIANT === 'competitive' ? '#f27ca9' : '#a97cf2' %>;
+    text-decoration: none;
+    margin-bottom: 16px;
+}
+.header-inner {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    height: 100%;
+}
+.header-inner > * {
+    padding: 18px 0;
+    height: 100%;
+}
+.header-inner a {
+    color: inherit;
+    text-decoration: inherit;
+}
+.header-inner a:hover {
+    text-decoration: underline;
+}
+.header-aside {
+    margin-left: auto;
+}
+
+.header-inner, .main, .footer {
+    max-width: 700px;
+    margin: auto;
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+input {
+    color: inherit;
+    font: inherit;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+}
+button, .linkbutton {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    background-color: #ddd;
+    color: inherit;
+    text-decoration: inherit;
+}
+.linkbutton {
+    display: inline-block;
+}
+button:active, .linkbutton:active {
+    background-color: #999;
+}
+summary {
+    cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+    button, .linkbutton {
+        background-color: #333;
+        border-color: #777;
+    }
+    button:active, .linkbutton:active {
+        background-color: #555;
+    }
+    input {
+        background-color: #333;
+        border-color: #777;
+    }
+}
+
+table {
+    width: 100%;
+}
+table, tbody, thead, tr, th, td {
+    border-collapse: collapse;
+}
+td, th {
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+@media (prefers-color-scheme: dark) {
+    td, th {
+        border-color: #555;
+    }
+}
+
+.footer {
+    opacity: 0.5;
+    margin: 24px auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.footer p {
+    margin: 0;
+}
+.footer a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+code, pre, .command {
+    font-family: monospace;
+    font-size: 1.2em;
+    background-color: #f8f8f8;
+    padding: 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+pre {
+    padding: 4px;
+    max-width: 100%;
+    overflow: auto;
+}
+.command::before {
+    content: '$ ';
+}
+@media (prefers-color-scheme: dark) {
+    code, pre, .command {
+        background-color: #222;
+        border-color: #444;
+    }
+}
+
+[hidden] {
+    display: none !important;
+}
+</style>

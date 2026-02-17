@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title><%= it.EVENT_NAME %></title>
+    <%~ include('./head-common.html') %>
+    <style>
+        form {
+            max-width: 250px;
+        }
+    </style>
+</head>
+
+<body>
+    <%~ include('./header-common.html') %>
+
+    <main class="main">
+        <h1>Welcome to the <%= it.EVENT_NAME %>!</h1>
+
+        <%~ include('./rules-common.html') %>
+
+        <h2>Register</h2>
+        <form id="register-form">
+            <label>
+                <div>Email</div>
+                <input id="register-email" type="email" required minlength="1" maxlength="40" placeholder="something000@umn.edu" autocomplete="email">
+            </label>
+            <label>
+                <div>Password</div>
+                <input id="register-password" type="password" required minlength="4" maxlength="1000" autocomplete="new-password">
+            </label>
+            <button>Register</button>
+        </form>
+
+        <h2>Log in</h2>
+        <form id="login-form">
+            <label>
+                <div>Email</div>
+                <input id="login-email" type="email" placeholder="something000@umn.edu" minlength="1" required autocomplete="email">
+            </label>
+            <label>
+                <div>Password</div>
+                <input id="login-password" type="password" minlength="4" required autocomplete="current-password">
+            </label>
+            <button>Sign in</button>
+            <details>
+                <summary>Can't access your account?</summary>
+                <div><b>Do not create a new account</b>. Contact the CTF organizers so we can fix your account.</div>
+            </details>
+        </form>
+    </main>
+
+    <script data-max-team-members="<%= it.MAX_TEAM_MEMBERS %>">
+        const registerEmailEl = document.getElementById('register-email');
+        const registerPasswordEl = document.getElementById('register-password');
+        const registerFormEl = document.getElementById('register-form');
+
+        const loginEmailEl = document.getElementById('login-email');
+        const loginPasswordEl = document.getElementById('login-password');
+        const loginFormEl = document.getElementById('login-form');
+
+        let inProgress = false;
+
+        const tryRegisterOrLogin = async (path, email, password) => {
+            try {
+                if (inProgress) return;
+                inProgress = true;
+
+                const res = await fetch(path, {
+                    method: 'PUT',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({email, password})
+                });
+
+                if (!res.ok) {
+                    throw new Error(await res.text());
+                }
+
+                const json = await res.json();
+                const session = json.session;
+                const teamId = json.teamId;
+                document.cookie = `ctf-session=${session}; max-age=${60 * 60 * 24 * 7}`;
+                if (teamId) {
+                    location.href = '/challenges';
+                } else {
+                    const maxMembers = +document.querySelector('[data-max-team-members]').dataset.maxTeamMembers;
+                    location.href = maxMembers > 1 ? '/team' : '/account';
+                }
+            } catch (e) {
+                console.error(e);
+                alert(e);
+            }
+
+            inProgress = false;
+        };
+
+        registerFormEl.addEventListener('submit', (e) => {
+            e.preventDefault();
+            tryRegisterOrLogin('/api/register', registerEmailEl.value, registerPasswordEl.value);
+        });
+
+        loginFormEl.addEventListener('submit', (e) => {
+            e.preventDefault();
+            tryRegisterOrLogin('/api/login', loginEmailEl.value, loginPasswordEl.value);
+        });
+    </script>
+
+    <%~ include('footer-common.html') %>
+</body>
+
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title><%= it.challenge.name %> - <%= it.EVENT_NAME %></title>
+    <%~ include('./head-common.html') %>
+    <style>
+        .flag-form {
+            display: flex;
+            flex-direction: row;
+            margin: 16px 0;
+        }
+        .flag-form input {
+            width: 100%;
+        }
+        .flag-form button {
+            white-space: nowrap;
+        }
+        #success p, #wrong p {
+            margin: 0;
+        }
+        #success, #wrong {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        #success {
+            border: 1px solid rgba(0, 128, 0, 0.694);
+            background-color: rgba(11, 229, 25, 0.24);
+        }
+        #wrong {
+            border: 1px solid red;
+            background-color: rgba(255, 0, 0, 0.371);
+        }
+        #previous-solves {
+            margin: 12px 0;
+        }
+        #previous-solves table {
+            margin-top: 12px;
+        }
+        .you {
+            font-weight: bold;
+        }
+        .team-name {
+            width: 100%;
+        }
+        .solved-at {
+            white-space: nowrap;
+        }
+
+        .hints-locked {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .hint-button {
+            font-size: inherit;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            background-color: #111;
+            color: #eee;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+            gap: 2px;
+            border-radius: 4px;
+            border: none;
+        }
+        .hint-button:active {
+            background-color: #111;
+            opacity: 0.9;
+        }
+        @media (prefers-color-scheme: dark) {
+            .hint-button {
+                background-color: #eee;
+                color: #111;
+            }
+            .hint-button:active {
+                background-color: #eee;
+            }
+        }
+        .hint-name {
+            font-weight: bold;
+            font-size: 1em;
+        }
+        .hint-cost {
+            font-size: 0.85em;
+        }
+
+        .unlocked-hints {
+
+        }
+        .unlocked-hint {
+            margin: 16px 0;
+            padding: 16px;
+            border-left: 4px solid #f27ca9;
+            background-color: rgba(242, 124, 169, 0.2);
+        }
+        .unlocked-hint p:first-child {
+            margin-top: 0;
+        }
+        .unlocked-hint p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <%~ include('./header-common.html') %>
+
+    <main class="main">
+        <h1>
+            <%= it.challenge.name %>
+            <% if (it.challenge.value === 1) { %>
+                (1 point)
+            <% } else { %>
+                (<%= it.challenge.value %> points)
+            <% } %>
+        </h1>
+
+        <% if (it.completed) { %>
+            <div id="success">
+                <% if (it.challenge.value === 1) { %>
+                    <p>Your team solved this challenge and earned 1 point.</p>
+                <% } else { %>
+                    <p>Your team solved this challenge and earned <%= it.challenge.value %> points.</p>
+                <% } %>
+                <% if (it.nextChallenge) { %>
+                    <p id="next-challenge-outer">
+                        <a id="next-challenge-inner" href="/challenges/<%= it.nextChallenge %>" class="linkbutton">Go to next part</a>
+                    </p>
+                <% } %>
+                <p>
+                    <a href="/challenges" class="linkbutton">Back to all challenges</a>
+                </p>
+            </div>
+        <% } %>
+
+        <%~ it.challenge.description(it.teamId, it.userId) %>
+
+        <% const hasUnlocked = it.unlockedHintIds.length > 0 %>
+        <% if (hasUnlocked) { %>
+            <div class="unlocked-hints">
+                <% for (const hint of it.challenge.hints) { %>
+                    <% if (it.unlockedHintIds.includes(hint.id)) { %>
+                        <div class="unlocked-hint">
+                            <%~ hint.content(it.teamId) %>
+                        </div>
+                    <% } %>
+                <% } %>
+            </div>
+        <% } %>
+
+        <% const hasLocked = !it.completed && it.challenge.hints && it.unlockedHintIds.length < it.challenge.hints.length %>
+        <% if (hasLocked) { %>
+            <div class="hints-locked">
+                <% for (let hintIndex = 0; hintIndex < it.challenge.hints.length; hintIndex++) { %>
+                    <% const hint = it.challenge.hints[hintIndex]; %>
+                    <% if (!it.unlockedHintIds.includes(hint.id)) { %>
+                        <button class="hint-button" data-cost="<%= hint.cost %>" data-hint-id="<%= hint.id %>" data-challenge-id="<%= it.challenge.id %>">
+                            <span class="hint-name">Unlock hint <%= hintIndex + 1 %></span>
+                            <span class="hint-cost">Costs <%= hint.cost %> point<%= hint.cost === 1 ? '' : 's' %></span>
+                        </button>
+                    <% } %>
+                <% } %>
+            </div>
+            <script>
+                let hintInProgress = false;
+
+                document.querySelectorAll('.hint-button').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        e.preventDefault();
+
+                        if (!confirm('Are you sure you want to unlock this? This will cost ' + button.dataset.cost + ' point' + (button.dataset.cost === '1' ? '' : 's') + '.')) {
+                            return;
+                        }
+
+                        if (hintInProgress) return;
+                        hintInProgress = true;
+
+                        try {
+                            const challengeId = button.dataset.challengeId;
+                            const hintId = button.dataset.hintId;
+                            const res = await fetch('/api/hint', {
+                                method: 'PUT',
+                                headers: {
+                                    'content-type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    challengeId,
+                                    hintId
+                                })
+                            });
+
+                            if (!res.ok) {
+                                throw new Error(await res.text());
+                            }
+
+                            location.reload();
+                            // don't clear hintInProgress
+                        } catch (e) {
+                            console.error(e);
+                            alert(e);
+                            hintInProgress = false;
+                        }
+                    });
+                });
+            </script>
+        <% } %>
+
+        <% if (!it.completed) { %>
+            <form id="flag-form" class="flag-form">
+                <input type="text" required minlength="1" placeholder="<%= it.challenge.flagFormat ?? 'flag{...}' %>" id="flag-input" autocomplete="off">
+                <button>Submit</button>
+            </form>
+
+            <div id="wrong" hidden>
+                <p><code id="reflect-input"></code> did not match the flag.</p>
+            </div>
+
+            <script>
+                const challengeId = "<%= it.challenge.id %>"
+
+                const flagFormEl = document.getElementById('flag-form');
+                const inputEl = document.getElementById('flag-input');
+                const wrongEl = document.getElementById('wrong');
+                const reflectInputEl = document.getElementById('reflect-input');
+                const nextChallengeOuterEl = document.getElementById('next-challenge-outer');
+                const nextChallengeInnerEl = document.getElementById('next-challenge-inner');
+
+                let guessInProgress = false;
+
+                flagFormEl.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    if (guessInProgress) return;
+                    guessInProgress = true;
+
+                    try {
+                        wrongEl.hidden = true;
+
+                        const guess = inputEl.value;
+                        const res = await fetch('/api/guess', {
+                            method: 'PUT',
+                            headers: {
+                                'content-type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                challengeId,
+                                guess
+                            })
+                        });
+
+                        if (!res.ok) {
+                            throw new Error(await res.text());
+                        }
+
+                        const json = await res.json();
+                        const success = json.success;
+                        const nextChallenge = json.nextChallenge;
+
+                        if (success) {
+                            location.reload();
+                            // don't clear guessInProgress
+                        } else {
+                            reflectInputEl.textContent = guess;
+                            wrongEl.hidden = false;
+                            guessInProgress = false;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert(e);
+                        guessInProgress = false;
+                    }
+                });
+            </script>
+        <% } %>
+
+        <% if (it.solves.length === 0) { %>
+            <p id="previous-solves">This flag has been solved 0 times.</p>
+        <% } else { %>
+            <details id="previous-solves" <%~ it.completed ? 'open' : '' %>>
+                <summary>
+                    This flag has been solved
+                    <% if (it.solves.length === 1) { %>
+                        1 time.
+                    <% } else { %>
+                        <%= it.solves.length %> times.
+                    <% } %>
+                </summary>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="team-name">Name</th>
+                            <th class="solved-at">Solved At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (const solve of it.solves) { %>
+                            <tr class="<%= solve.team_id === it.teamId ? 'you' : '' %>">
+                                <td class="team-name">
+                                    <% if (solve.team_id === it.teamId) { %>
+                                        (You)
+                                    <% } %>
+                                    <%= solve.team_name %>
+                                </td>
+                                <td class="solved-at" title="<%= new Date(solve.at).toLocaleString() %>">
+                                    <%= new Date(solve.at).toLocaleTimeString() %>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </details>
+        <% } %>
+    </main>
+
+    <%~ include('footer-common.html') %>
+</body>
+
+</html>

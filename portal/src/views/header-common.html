@@ -1,0 +1,26 @@
+<header class="header">
+    <div class="header-inner">
+        <a href="/"><b><%= it.EVENT_NAME %></b></a>
+        <a href="/challenges">Challenges</a>
+        <% if (it.userId) { %>
+            <% if (it.MAX_TEAM_MEMBERS > 1) { %>
+                <a href="/team">Team</a>
+            <% } else { %>
+                <a href="/account">Account</a>
+            <% } %>
+        <% } %>
+        <a href="/scoreboard">Scoreboard</a>
+        <% if (it.userId) { %>
+            <a class="header-aside" href="/signout">Sign out</a>
+        <% } else if (it.path !== '/') { %>
+            <a class="header-aside" href="/">Sign in</a>
+        <% } %>
+    </div>
+</header>
+
+<style>
+    noscript {
+        text-align: center;
+    }
+</style>
+<noscript><h1>JavaScript is required to use this site, sorry :(</h1></noscript>

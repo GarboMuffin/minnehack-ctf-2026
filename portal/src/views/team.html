@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% if (it.MAX_TEAM_MEMBERS > 1) { %>
+        <title>Team - <%= it.EVENT_NAME %></title>
+    <% } else { %>
+        <title>Account - <%= it.EVENT_NAME %></title>
+    <% } %>
+    <%~ include('./head-common.html') %>
+    <style>
+        #new-name-outer {
+            display: flex;
+            gap: 8px;
+        }
+        #new-name {
+            width: 100%;
+        }
+        .fields {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .fields p {
+            margin: 0;
+        }
+        ul {
+            margin: 0;
+        }
+
+        #password-outer {
+            position: relative;
+            width: 100%;
+        }
+        #password-output {
+            width: 100%;
+        }
+        #password-regenerate {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <%~ include('./header-common.html') %>
+
+    <main class="main">
+        <% if (it.MAX_TEAM_MEMBERS > 1) { %>
+            <h1>Team: <span id="header-dynamic"><%= it.teamName %></span></h1>
+        <% } else { %>
+            <h1>Account: <span id="header-dynamic"><%= it.teamName %></span></h1>
+        <% } %>
+
+        <div class="fields">
+            <form id="rename-form">
+                <label>
+                    <div>Name:</div>
+                    <div id="new-name-outer">
+                        <input style="width: 100%" type="text" minlength="1" required value="<%= it.teamName %>" id="new-name" autocomplete="off">
+                        <button id="team-rename-button">Rename</button>
+                    </div>
+                </label>
+            </form>
+    
+            <% if (it.MAX_TEAM_MEMBERS > 1 ) { %>
+                <label>
+                    <div>Team password:</div>
+                    <div id="password-outer">
+                        <input readonly id="password-output" autocomplete="off">
+                        <button id="password-regenerate">Click to regenerate</button>
+                    </div>
+                </label>
+                
+                <p>Anyone can use the team password to join your team, up to <%= it.MAX_TEAM_MEMBERS %> members per team. The old password will stop working when you generate a new one.</p>
+                <p>Team members:</p>
+                <ul>
+                    <% for (const teamMember of it.teamMembers) { %>
+                        <li><%= teamMember.user_email %></li>
+                    <% } %>
+                </ul>
+
+                <div>
+                    <button id="leave-team">Leave team</button>
+                </div>
+            <% } %>
+        </div>
+
+        <script>
+            const headerDynamicEl = document.getElementById('header-dynamic');
+            const newNameEl = document.getElementById('new-name');
+            const renameFormEl = document.getElementById('rename-form');
+            const passwordRegenerateEl = document.getElementById('password-regenerate');
+            const passwordOutputEl = document.getElementById('password-output');
+            const leaveTeamEl = document.getElementById('leave-team');
+
+            let renameInProgress = false;
+            let regenerateInProgress = false;
+            let leaveInProgress = false;
+
+            renameFormEl.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (renameInProgress) return;
+                renameInProgress = true;
+
+                try {
+                    const name = newNameEl.value;
+                    const res = await fetch('/api/rename-team', {
+                        method: 'PUT',
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name
+                        })
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(await res.text());
+                    }
+
+                    const json = await res.json();
+                    headerDynamicEl.textContent = name;
+                } catch (e) {
+                    console.error(e);
+                    alert(e);
+                }
+
+                renameInProgress = false;
+            });
+
+            passwordRegenerateEl?.addEventListener('click', async () => {
+                if (regenerateInProgress) return;
+                regenerateInProgress = true;
+
+                try {
+                    const res = await fetch('/api/regenerate-team-password', {
+                        method: 'PUT'
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(await res.text());
+                    }
+
+                    const json = await res.json();
+                    const teamPassword = json.teamPassword;
+                    passwordRegenerateEl.hidden = true;
+                    passwordOutputEl.value = teamPassword;
+                    passwordOutputEl.focus();
+                    passwordOutputEl.select();
+                } catch (e) {
+                    console.error(e);
+                    alert(e);
+                }
+
+                regenerateInProgress = false;
+            });
+
+            leaveTeamEl?.addEventListener('click', async () => {
+                if (leaveInProgress) return;
+
+                if (!confirm('Are you sure you want to leave the team?')) {
+                    return;
+                }
+
+                leaveInProgress = true;
+                try {
+                    const res = await fetch('/api/leave-team', {
+                        method: 'PUT'
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(await res.text());
+                    }
+
+                    const json = await res.json();
+                    location.href = '/team';
+                } catch (e) {
+                    console.error(e);
+                    alert(e);
+                }
+
+                leaveInProgress = false;
+            });
+        </script>
+    </main>
+
+    <%~ include('footer-common.html') %>
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+<style>
+    .rules-ul li {
+        padding: 4px 0;
+    }
+</style>
+
+<% if (it.VARIANT === 'competitive') { %>
+    <p><b>You are on the competitive prize-eligible version of the CTF. You MUST follow these rules to receive a prize.</b></p>
+    <p>If you don't care about the prize and just want to have fun, go to the non-competitive website instead: <a href="https://noncompetitive.ctf.minnehack.com/">https://noncompetitive.ctf.minnehack.com/</a></p>
+    <ul class="rules-ul">
+        <li><b>In person only.</b> It's how we make sure you follow the rules.</li>
+        <li><b>No AI.</b> The point of this event isn't to find out how much ChatGPT or Claude knows; it's to find out how much you know.</li>
+        <li><b>This is an individual event.</b> We're only buying one Flipper Zero.</li>
+        <li><b>You can get bonus points</b> if you responsibly disclose any security bugs you find in the CTF itself, such as this website.</li>
+    </ul>
+<% } else { %>
+    <p><b>You are on the non-competitive version of the CTF.</b></p>
+    <p>You can't receive prizes on this website, but you can make teams and use AI freely (the rest of MinneHack is still subject to its AI policy).</p>
+    <p>If you want to receive prizes, go to the competitive version of the website instead: <a href="http://ctf.minnehack.com/">http://ctf.minnehack.com/</a></p>
+<% } %>

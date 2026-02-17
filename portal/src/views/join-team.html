@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Create or join a team - <%= it.EVENT_NAME %></title>
+    <%~ include('./head-common.html') %>
+    <style>
+        form {
+            max-width: 250px;
+        }
+        #created-team-container {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 128, 0, 0.694);
+            background-color: rgba(11, 229, 25, 0.24);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #created-team-container > * {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <%~ include('./header-common.html') %>
+
+    <main class="main">
+        <div id="not-yet-joined-container">
+            <% if (it.MAX_TEAM_MEMBERS > 1) { %>
+                <h1>Create or join a team</h1>
+
+                <p><b>Just one member</b> of your group should create a team.</p>
+                <p>Once a team is created, a <b>team password</b> will be generated. Other members can join by entering the team password.</p>
+
+                <h2>Create a team</h2>
+                <form id="create-team-form">
+                    <label>
+                        <div>Name</div>
+                        <input type="text" minlength="1" required id="create-team-name" placeholder="You can change this later" autocomplete="off">
+                    </label>
+                    <button>Create team</button>
+                </form>
+
+                <h2>Join a team</h2>
+                <form id="join-team-form">
+                    <label>
+                        <div>Team password</div>
+                        <input type="password" minlength="1" required id="join-team-password" placeholder="1234abcd" autocomplete="off">
+                    </label>
+                    <button>Join team</button>
+                </form>
+            <% } else { %>
+                <h1>Finish setting up your account</h1>
+                <p>You need to pick a name. Other people will be able to see this on the leaderboard.</p>
+                <form id="create-team-form">
+                    <label>
+                        <div>Name</div>
+                        <input type="text" minlength="1" required id="create-team-name" placeholder="You can change this later" autocomplete="off" autofocus>
+                    </label>
+                    <button>Finish</button>
+                </form>
+            <% } %>
+        </div>
+
+        <div id="created-team-container" hidden>
+            <% if (it.MAX_TEAM_MEMBERS > 1) { %>
+                <h2>Your team has been created</h2>
+                <p>Other members of your group can join using the <b>team password</b>: <code id="created-team-password"></code></p>
+                <p>The password can be regenerated later in the team settings page.</p>
+            <% } else { %>
+                <h2>You have finished setting up your account.</h2>
+            <% } %>
+            <p>
+                <a href="/challenges" class="linkbutton">
+                    Go to the challenges
+                </a>
+            </p>
+        </div>
+    </main>
+
+    <script>
+        const notYetJoinedContainerEl = document.getElementById('not-yet-joined-container');
+
+        const createTeamNameEl = document.getElementById('create-team-name');
+        const createTeamFormEl = document.getElementById('create-team-form');
+
+        const createdTeamContainerEl = document.getElementById('created-team-container');
+        const createdTeamPasswordEl = document.getElementById('created-team-password');
+
+        const joinTeamPasswordEl = document.getElementById('join-team-password');
+        const joinTeamFormEl = document.getElementById('join-team-form');
+
+        let inProgress = false;
+
+        createTeamFormEl?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (inProgress) return;
+            inProgress = true;
+
+            try {
+                const res = await fetch('/api/create-team', {
+                    method: 'PUT',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: createTeamNameEl.value
+                    })
+                });
+
+                if (!res.ok) {
+                    throw new Error(await res.text());
+                }
+
+                const json = await res.json();
+                const teamPassword = json.teamPassword;
+                if (createdTeamPasswordEl) createdTeamPasswordEl.textContent = teamPassword;
+                notYetJoinedContainerEl.hidden = true;
+                createdTeamContainerEl.hidden = false;
+                createdTeamContainerEl.querySelector('.linkbutton')?.focus();
+            } catch (e) {
+                console.error(e);
+                alert(e);
+            }
+
+            inProgress = false;
+        });
+
+        joinTeamFormEl?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (inProgress) return;
+            inProgress = true;
+
+            try {
+                const res = await fetch('/api/join-team', {
+                    method: 'PUT',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        teamPassword: joinTeamPasswordEl.value
+                    })
+                });
+
+                if (!res.ok) {
+                    throw new Error(await res.text());
+                }
+
+                const json = await res.json();
+                location.reload();
+            } catch (e) {
+                console.error(e);
+                alert(e);
+            }
+
+            inProgress = false;
+        });
+    </script>
+
+    <%~ include('footer-common.html') %>
+</body>
+
+</html>
