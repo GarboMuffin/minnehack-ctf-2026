@@ -1,0 +1,8 @@
+FROM docker.io/debian:12
+WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y nodejs && \
+    apt-get clean
+COPY db.js .
+COPY flag /flag
+CMD ["node", "/app/db.js"]
