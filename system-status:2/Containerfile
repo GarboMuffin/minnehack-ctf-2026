@@ -1,0 +1,8 @@
+FROM docker.io/debian:12
+WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y nano vim cowsay lolcat less python3 && \
+    apt-get clean
+COPY status.sh fake-backend.py 2fa.py .
+COPY flag /flag
+CMD ["/app/status.sh"]
