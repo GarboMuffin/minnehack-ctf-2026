@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 
 diff=$(mktemp)
 gh pr checkout "$PR_NUMBER"
-git diff origin/master > "$diff"
+git diff origin/main > "$diff"
 
 got_label=0
 if grep -q "^\+\+\+ b/instrumentation/" "$diff"; then
