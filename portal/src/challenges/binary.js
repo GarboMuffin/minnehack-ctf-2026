@@ -129,5 +129,5 @@ c.add({
         ${ssh('N4onoYe1R584oDuGHN7zPo4x')}
         `,
     value: 50,
-    check: staticFlag('flag{e80525fc-9d60-4d11-a34b-73b386753ea3}')
+    check: staticFlag('flag{fbb1ca83-de6d-4d44-a3fa-99d53999bd5d}')
 });

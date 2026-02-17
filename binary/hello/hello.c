@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-char *the_flag = "flag{e80525fc-9d60-4d11-a34b-73b386753ea3}";
+char *the_flag = "flag{fbb1ca83-de6d-4d44-a3fa-99d53999bd5d}";
 
 int main() {
     char *flag_ptr = the_flag;
