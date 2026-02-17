@@ -1,0 +1,196 @@
+services:
+  nginx:
+    image: docker.io/nginx:1.29
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/ssl:ro
+      - ./nginx/certbot-secrets/etc/letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/www:/www:ro
+    ports:
+      - "128.101.131.185:80:80"
+      - "128.101.131.185:443:443"
+    depends_on:
+      - portal-competitive
+      - portal-noncompetitive
+      - svg
+      - ascii
+      - png
+    networks:
+      nginx:
+      portal-competitive:
+      portal-noncompetitive:
+      svg:
+      ascii:
+      png:
+
+  portal-competitive:
+    build: ./portal
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./data/portal-competitive:/data
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/data/portal.db
+      - CTF_STATUS=during
+      - CTF_MAX_TEAM_MEMBERS=1
+      - CTF_VARIANT=competitive
+      - TZ=America/Chicago
+    networks:
+      - portal-competitive
+
+  portal-noncompetitive:
+    build: ./portal
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./data/portal-noncompetitive:/data
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/data/portal.db
+      - CTF_STATUS=during
+      - CTF_MAX_TEAM_MEMBERS=4
+      - CTF_VARIANT=noncompetitive
+      - TZ=America/Chicago
+    networks:
+      - portal-noncompetitive
+
+  ssh:
+    build: ./ssh:1
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./data/ssh:/data
+      - ${XDG_RUNTIME_DIR}/podman/podman.sock:/run/podman/podman.sock
+    ports:
+      - "128.101.131.184:80:22"
+    networks:
+      - ssh
+
+  minecraft:
+    build: ./minecraft/server-container
+    restart: "no"
+    init: true
+    volumes:
+      - ./data/minecraft:/server
+    ports:
+      - "128.101.131.184:443:25565"
+    resources:
+      limits:
+        cpus: '4.0'
+    networks:
+      - minecraft
+
+  pushbot-competitive:
+    build: ./github-actions
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./github-actions/repos_c.txt:/data/repos.txt:ro
+      - ./github-actions/deploy_keys_c.txt:/data/deploy_keys.txt:ro
+    networks:
+      - pushbot-competitive
+
+  pushbot-noncompetitive:
+    build: ./github-actions
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./github-actions/repos_nc.txt:/data/repos.txt:ro
+      - ./github-actions/deploy_keys_nc.txt:/data/deploy_keys.txt:ro
+    networks:
+      - pushbot-noncompetitive
+
+  svg:
+    build: ./svg
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./data/svg:/data
+    environment:
+      - DATABASE_PATH=/data/development.db
+    networks:
+      - svg
+
+  svg-crawler:
+    build: ./crawler
+    restart: unless-stopped
+    init: true
+    environment:
+      - INTERNAL_URL=http://svg
+      - PUBLIC_URL=https://yno1czvpnjle3j68mcgjygqz.ctf.minnehack.com
+      - FLAG=flag{c691fb36-cff3-4d42-949d-a372f38f65d9}
+    networks:
+      - svg
+      - svg-crawler
+    depends_on:
+      - svg
+
+  ascii:
+    build: ./ascii
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./data/ascii:/data
+    environment:
+      - DATABASE_PATH=/data/development.db
+    networks:
+      - ascii
+
+  ascii-crawler:
+    build: ./crawler
+    restart: unless-stopped
+    init: true
+    environment:
+      - INTERNAL_URL=http://ascii
+      - PUBLIC_URL=https://fffays9qhabdnjkmabzrj55m.ctf.minnehack.com
+      - FLAG=flag{57ffb1f5-ce95-4978-a9a1-46c55bfb115a}
+    networks:
+      - ascii
+      - ascii-crawler
+    depends_on:
+      - ascii
+
+  png:
+    build: ./png
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./data/png:/data
+    environment:
+      - DATABASE_PATH=/data/development.db
+    networks:
+      - png
+
+  png-crawler:
+    build: ./crawler
+    restart: unless-stopped
+    init: true
+    environment:
+      - INTERNAL_URL=http://png
+      - PUBLIC_URL=https://qcxteyguuliargrkmwp0ajbh.ctf.minnehack.com
+      - FLAG=flag{42b61670-5196-4bb3-ba53-cc38d881c32a}
+    networks:
+      - png
+      - png-crawler
+    depends_on:
+      - png
+
+networks:
+  nginx:
+  portal-competitive: # needs external (github api)
+  portal-noncompetitive: # needs external (github api)
+  ssh:
+  minecraft:
+  pushbot-competitive: # needs external (github)
+  pushbot-noncompetitive: # needs external (github)
+  svg:
+    internal: true
+  svg-crawler: # needs external (connect to public nginx endpoint)
+  ascii:
+    internal: true
+  ascii-crawler: # needs external (connect to public nginx endpoint)
+  png:
+    internal: true
+  png-crawler: # needs external (connect to public nginx endpoint)
