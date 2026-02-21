@@ -6,7 +6,7 @@ Commit history, unfinished challenges, and a couple other things are not include
 
 ## Puzzles and solutions
 
-We're working on a writeup for everything. It takes time. It'll be published on https://muffin.ink/ when it's ready.
+You can read all the puzzles and solutions in a much easier format at: https://muffin.ink/blog/minnehack-ctf-2026/
 
 ## How we ran the CTF in production
 
